@@ -1,38 +1,42 @@
 from tkinter import *
- 
+#from PIL import ImageTk, Image 
 class Main:
     def __init__(self, parent):
         
-        WIDTH = 1366
-        HEIGHT = 768
-        num_cols = 3
-        num_rows = 2
+        self.WIDTH = 1000
+        self.HEIGHT = 800
+        self.num_cols = 3
+        self.num_rows = 2
         global images
         global gou_images
 
-        regular_name = [
+        images = []
+        gou_images = []
+
+        root.geometry('{}x{}'.format(self.WIDTH,self.HEIGHT))
+        # forbid user to resize the GUI window
+        root.resizable(0, 0)
+        
+        self.regular_name = [
             'Margherita', 'Kiwi', 'Garlic', 'Cheese', 'Hawaiian', 'Mediterranean (vegan)'
         ]
-        regular_img = [
+        self.regular_img = [
             'img/Margherita.gif', 'img/Kiwi.gif', 'img/Garlic.gif', 'img/Cheese.gif',
             'img/Hawaiian.gif', 'img/Mediterranean (vegan).gif'
         ]
-        regular_content = [
+        self.regular_content = [
             'Fresh tomato, mozzarella, fresh basil, parmesan', 'Bacon, egg, mozzarella',
             'Mozzarella, garlic', 'Mozzarella, oregano',
             'Ham, pineapple, mozzarella', 'Lebanese herbs, olive oil, fresh tomatoes, olives, onion'
         ]
-        gourment_name = [
+        self.gourment_name = [
             'Meat', 'Chicken Cranberry', 'Satay Chicken', 'Big BBQ Bacon', 'Veggie', 'Meatlovers'
         ]
-##        gourment_img = [
-##            'img/Margherita.gif', 'img/Kiwi.gif', 'img/Garlic.gif', 'img/Cheese.gif',
-##        ]
-        gourment_img = [
-            'img/Meat.gif', 'img/Chicken Cranberry.gif', 'img/Satay Chicken.gif', 'img/Big BBQ Bacon.gif',
-            'img/Veggie.gif', 'img/Meatlovers.gif'
+        self.gourment_img = [
+            'img/Margherita.gif', 'img/Kiwi.gif', 'img/Garlic.gif', 'img/Cheese.gif',
+            'img/Hawaiian.gif', 'img/Mediterranean (vegan).gif'
         ]
-        gourment_content = [
+        self.gourment_content = [
             'Bacon, pancetta, ham, onion, pepperoni, mozzarella', 'Smoked chicken, cranberry, camembert mozzarella',
             'Smoked chic, onions, capsicum, pine nuts, satay sauce, mozzarella Chilli flakes and dried basil',
             'Smoky Bacon served on our classic marinara tomato sauce, heaped with mozzarella, topped off with a sweet and tangy BBQ drizzle', 
@@ -40,9 +44,29 @@ class Main:
             'Spicy pepperoni, Italian sausage, succulent ham, seasoned ground beef and crispy bacon all piled onto classic marinara sauce and finished with cheesy mozzarella and a drizzle of BBQ'
         ]
 
+       
+
+        #create canvas
+        self.f = Frame(parent, relief=FLAT, bd=-2)
+        self.f.place(x=0, y=80, width=self.WIDTH, height=self.HEIGHT-80)
+
+        self.canvas = Canvas(self.f, bd=-2)
+        self.frame = Frame(self.canvas, bd=-2, bg='white', width=self.WIDTH, height=self.HEIGHT-80)
+        
+        self.myscrollbar = Scrollbar(
+            self.f, 
+            orient=VERTICAL, 
+            command=self.canvas.yview
+        )  # SCROLL BAR   ####
+        self.canvas.configure(yscrollcommand=self.myscrollbar.set)
+        self.myscrollbar.pack(side=RIGHT, fill=Y)
+
+        self.canvas.pack(side=LEFT)
+        self.canvas.create_window((0, 0), window=self.frame)
+        self.frame.bind("<Configure>", self.myfunction)
 
         #top menu frame
-        self.frame1 = Frame(parent, bg="linen", padx=30, height = 30)
+        self.frame1 = Frame(parent, bg="linen", padx=30)
         self.frame1.grid(row = 0, columnspan = 7)
         #welcome label
         welcome_label = Label(self.frame1, text = "Welcome, ", bg = "linen", font=("Conmic Sans MS","20","bold"), fg = "red")
@@ -65,19 +89,37 @@ class Main:
         #total button
         total_label = Label(self.frame1, text = "Total = ", bg = "linen", font=("Conmic Sans MS","20","bold"), fg = "red")
         total_label.grid(row=0, column=6, sticky = W, padx = 12, pady = 15)
+        
+        self.regular_frame = Frame(self.frame, bg="linen", width = self.WIDTH, height = self.HEIGHT)
+        self.gourment_frame = Frame(self.frame, bg="linen", width = self.WIDTH, height = self.HEIGHT)
 
-    
-        #regular frame        
-        self.frame2 = Frame(parent, bg="linen", width = WIDTH, height = 900)
-        self.frame2.grid(row = 1, columnspan = 4)
-        #product frame
+        #default get into regular page first
+        self.regular()
+
+    # def myfunction(self):
+    #     self.canvas.configure(scrol)
+
+    def myfunction(self, event):
+        self.canvas.configure(
+            scrollregion=self.canvas.bbox("all"), width=self.WIDTH-20, height=self.HEIGHT-60
+        )
+
+
+
+    def regular(self):
+        self.gourment_frame.grid_forget()
+
+        # self.canvas.create_window((0, 30),  window=self.regular_frame)    
+        self.regular_frame.grid(row = 1, columnspan = 4) 
+        
+        #每个商品的小frame
         self.re_product_frame = []
-        for i in range(len(regular_name)):
-            self.re_product_frame.append(Frame(self.frame2, bg="linen", width = WIDTH, height = 50))
+        for i in range(len(self.regular_name)):
+            self.re_product_frame.append(Frame(self.regular_frame, bg="linen", width = self.WIDTH, height = 60))
         frame_count = 0
-        for c in range(num_cols):
-            for r in range(num_rows):
-                if frame_count < len(regular_name):
+        for c in range(self.num_cols):
+            for r in range(self.num_rows):
+                if frame_count < len(self.regular_name):
                     self.re_product_frame[frame_count].grid(row = r, column = c)
                     frame_count += 1
         #names and images of each regular pizza
@@ -91,19 +133,19 @@ class Main:
         self.re_add_cart_btn = []
         i = 0
 
-        images = []
-        for r in regular_img:
+        # images = []
+        for r in self.regular_img:
             images.append(PhotoImage(file = r))
         # print(images)
-        for i in range(len(regular_name)):
+        for i in range(len(self.regular_name)):
             #print(i, len(self.product_frame), regular_name,images[i])
-            self.re_name_label.append(Label(self.re_product_frame[i], text = regular_name[i], font=("Conmic Sans MS","20","bold"), fg = "grey"))
+            self.re_name_label.append(Label(self.re_product_frame[i], text = self.regular_name[i], font=("Conmic Sans MS","20","bold"), fg = "grey"))
             self.re_name_label[i].grid(row = 0, column = 0, sticky = N+W+S+E, pady = 5)
 
             self.re_img_label.append(Label(self.re_product_frame[i], image=images[i]))
             self.re_img_label[i].grid(row = 1, column = 0)
             
-            self.re_content_label.append(Label(self.re_product_frame[i], text = regular_content[i]))
+            self.re_content_label.append(Label(self.re_product_frame[i], text = self.regular_content[i]))
             self.re_content_label[i].grid(row = 2, column = 0, sticky = N+W+S+E, pady = 3)
 
             self.re_price_label.append(Label(self.re_product_frame[i], text = "$10", font=("Conmic Sans MS","16","bold"), fg = "red"))
@@ -120,14 +162,18 @@ class Main:
             
             self.re_add_cart_btn.append(Button(self.re_product_frame[i], text = "ADD TO CART", fg = "red"))
             self.re_add_cart_btn[i].grid(row = 4, column = 0, sticky = N+W+S+E, pady = 1)
-            i += 1
+   
+        # self.frame2.grid(row = 1, columnspan = 4)
+        # self.frame2.grid_propagate(0)
 
-
-#########gourment part###########
+    def gourment(self):
+        #########gourment part###########
         #create gourment frame
-        self.gourment_frame = Frame(parent, bg="linen", width = 900, height = 900)
+        self.regular_frame.grid_forget()
         ##self.gourment_frame.grid(row = 0, columnspan = 3)        
-
+        # self.canvas.create_window((0, 30), window=self.gourment_frame)
+        self.gourment_frame.grid(row = 1, columnspan = 3)
+        # self.regular_frame.grid_propagate(0)
         #create gourment pizza product frames
         gou_num_cols = 3
         gou_num_rows = 6
@@ -143,8 +189,8 @@ class Main:
         self.gou_add_cart_btn = []
         i = 0
         #create gourment pizza images list
-        gou_images = []
-        for r in gourment_img:
+        # gou_images = []
+        for r in self.gourment_img:
             gou_images.append(PhotoImage(file = r))
         #divide the whole big gourment frame into 6*3 small product frames, with the arrangment of the first column is used to display images,
         #the second is used to display labels(names, contents) and add-to-cart button, the third column is totally empty.
@@ -177,16 +223,16 @@ class Main:
             frame_count += 1
 
         #the names,images, add-to-cart buttons of each gourment pizza in each gourment product frame
-        for i in range(len(gourment_name)):
+        for i in range(len(self.gourment_name)):
             #print(i, len(self.product_frame), regular_name,images[i])
             
             self.gou_img_label.append(Label(self.gou_product_img_frame[i], image=gou_images[i], padx = 50))
             self.gou_img_label[i].grid(row = 0, column = 0)
 
-            self.gou_name_label.append(Label(self.gou_product_text_frame[i], text = gourment_name[i], font=("Conmic Sans MS","20","bold"), fg = "grey"))
+            self.gou_name_label.append(Label(self.gou_product_text_frame[i], text = self.gourment_name[i], font=("Conmic Sans MS","20","bold"), fg = "grey"))
             self.gou_name_label[i].grid(row = 0, column = 1, sticky = W, pady = 0, padx = 25)
             
-            self.gou_content_label.append(Label(self.gou_product_text_frame[i], text = gourment_content[i], wraplength = 400, justify = 'left'))
+            self.gou_content_label.append(Label(self.gou_product_text_frame[i], text = self.gourment_content[i], wraplength = 400, justify = 'left'))
             self.gou_content_label[i].grid(row = 1, column = 1, sticky = N+S+E+W, pady = 0, padx = 25)
 
             self.gou_price_label.append(Label(self.gou_product_text_frame[i], text = "$17", font=("Conmic Sans MS","20","bold"), fg = "red", bg="linen"))
@@ -205,15 +251,9 @@ class Main:
             self.gou_add_cart_btn[i].grid(row = 3, column = 1, sticky = S, pady = 6, padx = 0)
             # i += 1
 
-    def regular(self):
-        self.gourment_frame.grid_forget()
-        self.frame2.grid(row = 1, columnspan = 4)
-        self.frame2.grid_propagate(0)
-
-    def gourment(self):
-        self.frame2.grid_forget()
-        self.gourment_frame.grid(row = 1, columnspan = 3)
-        self.frame2.grid_propagate(0)
+        
+        
+        
 
 
 #main
@@ -221,4 +261,6 @@ if __name__ == '__main__':
     root = Tk()
     buttons = Main(root)
     root.title ("Heavenly Pizza GUI Ordering System")
+    
     root.mainloop()
+
