@@ -1,5 +1,6 @@
 from tkinter import *
-#from PIL import ImageTk, Image 
+ 
+from tkinter.scrolledtext import *
 class Main:
     def __init__(self, parent):
         
@@ -9,11 +10,12 @@ class Main:
         self.num_rows = 2
         global images
         global gou_images
-
+        self.totalprice = 0
         images = []
         gou_images = []
         self.ReNum = [0,0,0,0,0,0] #create list of the number shown in the number counter, with the initial numbers 0.
         self.GouNum = [0,0,0,0,0,0] #create list of the number shown in the number counter, with the initial numbers 0.
+        self.pizzanum = []
         root.geometry('{}x{}'.format(self.WIDTH,self.HEIGHT))
         # the users cannot change the size of the window
         root.resizable(0, 0)
@@ -82,7 +84,7 @@ class Main:
         gourmet_btn = Button(self.frame1, text = "Gourmet pizzas", bg = "linen", font=("Conmic Sans MS","20","bold"), fg = "coral", command = self.gourmet)
         gourmet_btn.grid(row=0, column=3, sticky = W, padx = 12, pady = 15)
         #check out button
-        checkout_btn = Button(self.frame1, text = "Checkout", bg = "linen", font=("Conmic Sans MS","20","bold"), fg = "red")
+        checkout_btn = Button(self.frame1, text = "Checkout", bg = "linen", font=("Conmic Sans MS","20","bold"), fg = "red", command = self.checkout)
         checkout_btn.grid(row=0, column=4, sticky = W, padx = 12, pady = 15)
         #cart button
         cart_btn = Button(self.frame1, text = "CART", bg = "linen", font=("Conmic Sans MS","20","bold"), fg = "red")
@@ -93,6 +95,7 @@ class Main:
         
         self.regular_frame = Frame(self.frame, bg="linen", width = self.WIDTH, height = self.HEIGHT)
         self.gourmet_frame = Frame(self.frame, bg="linen", width = self.WIDTH, height = self.HEIGHT)
+        self.checkout_frame = Frame(self.frame, bg="linen", width = self.WIDTH, height = self.HEIGHT)
 
         #default get in the regular page first 
         self.regular()
@@ -109,7 +112,7 @@ class Main:
 
     def regular(self):
         self.gourmet_frame.grid_forget()
-
+        self.checkout_frame.grid_forget()
         # self.canvas.create_window((0, 30),  window=self.regular_frame)    
         self.regular_frame.grid(row = 1, columnspan = 4) 
         
@@ -185,6 +188,7 @@ class Main:
         
         #create gourment frame
         self.regular_frame.grid_forget()
+        self.checkout_frame.grid_forget()
         ##self.gourment_frame.grid(row = 0, columnspan = 3)        
         # self.canvas.create_window((0, 30), window=self.gourment_frame)
         self.gourmet_frame.grid(row = 1, columnspan = 3)
@@ -258,7 +262,7 @@ class Main:
 
 
 ################################
-     
+    #self.totalprice = 0 
     def re_AddNumber(self,x):         
         re_index = self.re_add_num_btn.index(self.re_add_num_btn[x]) #find the index of the current button that user clicked in the cutton list
         self.ReNum[re_index] += 1 #Once click one of the buttons at a time, it will add one number
@@ -266,7 +270,8 @@ class Main:
         if self.ReNum[re_index] >= 0:
             
             self.re_num_label[re_index].configure(text = self.ReNum[re_index])
-            self.total_label.configure(text = "Total = $"+(str((self.ReNum[re_index])*10)))
+            self.totalprice += 10
+            self.total_label.configure(text = "Total = $"+str(self.totalprice))
         #total number in the ReNum list
         re_total = 0 
         for item in self.ReNum:
@@ -295,7 +300,8 @@ class Main:
         if self.ReNum[re_index] >= 0 and self.ReNum[re_index] <=5:
             
             self.re_num_label[x].configure(text = self.ReNum[re_index])                 
-        
+            self.totalprice -= 10
+            self.total_label.configure(text = "Total = $"+str(self.totalprice))
         elif self.ReNum[re_index] < 0:
             self.ReNum[re_index] = 0
             
@@ -309,6 +315,9 @@ class Main:
         if self.GouNum[gou_index] >= 0:
                  
             self.gou_num_label[gou_index].configure(text = self.GouNum[gou_index])
+            self.totalprice += 17
+            self.total_label.configure(text = "Total = $"+str(self.totalprice))
+
         #total number in the ReNum list
         re_total = 0 
         for item in self.ReNum:
@@ -334,11 +343,63 @@ class Main:
         if self.GouNum[gou_index] >= 0 and self.GouNum[gou_index] <=5:
             
             self.gou_num_label[x].configure(text = self.GouNum[gou_index])                 
-        
+            self.totalprice -= 17
+            self.total_label.configure(text = "Total = $"+str(self.totalprice))
+
         elif self.GouNum[gou_index] < 0:
             self.GouNum[gou_index] = 0
             
             self.gou_num_label[gou_index].configure(text = self.GouNum[gou_index])
+
+
+    def checkout(self):
+        self.regular_frame.grid_forget()
+        self.gourmet_frame.grid_forget()
+        self.checkout_frame.grid(row = 1, columnspan = 3)
+        Label(self.checkout_frame, text='Name:', font=("Conmic Sans MS","15","bold"), bg = 'linen').grid(row=1,column=0, sticky = E,padx=1,pady=10)
+        v1 = StringVar()
+        e1 = Entry(self.checkout_frame,textvariable=v1,width=80)
+        e1.grid(row=1,column=1,padx=1,pady=10)         
+
+        Label(self.checkout_frame, text='Address:', font=("Conmic Sans MS","15","bold"), bg = 'linen').grid(row=2,column=0, sticky = E,padx=1,pady=10)
+        v2 = StringVar()
+        e2 = Entry(self.checkout_frame,textvariable=v2,width=80)
+        e2.grid(row=2,column=1,padx=1,pady=10)          
+
+        Label(self.checkout_frame, text='Telephone:', font=("Conmic Sans MS","15","bold"), bg = 'linen').grid(row=3,column=0, sticky = E,padx=1,pady=10)
+        v3 = StringVar()
+        e3 = Entry(self.checkout_frame,textvariable=v3,width=80)
+        e3.grid(row=3,column=1,padx=1,pady=10)           
+
+        Label(self.checkout_frame, text='Email:', font=("Conmic Sans MS","15","bold"), bg = 'linen').grid(row=4,column=0, sticky = E,padx=1,pady=10)
+        v4 = StringVar()
+        e4 = Entry(self.checkout_frame,textvariable=v4,width=80)
+        e4.grid(row=4,column=1,padx=1,pady=10)
+
+        Label(self.checkout_frame, text='Your Order: ', font=("Conmic Sans MS","15","bold"), bg = 'linen').grid(row=5,column=0, sticky = NE,padx=1,pady=10)
+        self.showorder = ScrolledText(self.checkout_frame, width=55, height=10, wrap='word')
+        self.showorder.grid(row=5,column=1,padx=1,pady=10, columnspan=1, sticky = W)
+
+
+        Label(self.checkout_frame, text='Delivery Method: ', font=("Conmic Sans MS","15","bold"), bg = 'linen').grid(row=8,column=0, sticky = E,padx=1,pady=10)
+
+        Label(self.checkout_frame, text='Delivery', font=("Conmic Sans MS","15","bold"), bg = 'linen').grid(row=8,column=1, sticky = W,padx=1,pady=10)
+            
+        Label(self.checkout_frame, text='Total Price:', font=("Conmic Sans MS","15","bold"), bg = 'linen').grid(row=11,column=0, sticky = E,padx=1,pady=10)
+        Label(self.checkout_frame, text= ' $ '+str(self.totalprice), font=("Conmic Sans MS","15","bold"), bg = 'linen').grid(row=12,column=1, sticky = W,padx=1,pady=10)
+
+        Button(self.checkout_frame, text='Place Order', font=("Conmic Sans MS","20","bold"), fg = "red").grid(row=13,column=1,padx=1,pady=10)
+
+        self.pizzanum = []
+
+        for i in range(6):           
+            if self.ReNum[i] > 0:
+                self.pizzanum.append(self.regular_name[i]+"   x   "+str(self.ReNum[i]))
+            if self.GouNum[i] > 0:
+                self.pizzanum.append(self.gourmet_name[i]+"   x   "+str(self.GouNum[i]))
+        for i in self.pizzanum: 
+            self.showorder.insert(END, '%s\n'%i)
+
 #******************************************
 class Help:
     def __init__(self):
@@ -356,6 +417,12 @@ class Help:
     def close_help(self):
         self.help_box.destroy()
 
+
+    
+      
+
+
+
 #main
 if __name__ == '__main__':
     root = Tk()
@@ -363,4 +430,6 @@ if __name__ == '__main__':
     root.title ("Heavenly Pizza GUI Ordering System")
     
     root.mainloop()
+
+
 
