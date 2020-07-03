@@ -1,25 +1,26 @@
 from tkinter import *
- 
+#from PIL import ImageTk, Image 
 from tkinter.scrolledtext import *
 import tkinter.messagebox #Messagebox
 
+#The Main Class
 class Main:
-    def __init__(self, parent):
-        
+    def __init__(self, parent):        
         self.WIDTH = 1000
         self.HEIGHT = 700
         self.num_cols = 3
         self.num_rows = 2
         global images
         global gou_images
-        self.totalprice = 0
+        self.totalprice = 0 #the totalprize of one order
         images = []
         gou_images = []
         self.ReNum = [0,0,0,0,0,0] #create list of the number shown in the number counter, with the initial numbers 0.
         self.GouNum = [0,0,0,0,0,0] #create list of the number shown in the number counter, with the initial numbers 0.
         self.pizzanum = []
         root.geometry('{}x{}'.format(self.WIDTH,self.HEIGHT))
-        self.total = 0
+        
+        self.total = 0# total number of pizza
         # the users cannot change the size of the window
         root.resizable(0, 0)
         
@@ -49,9 +50,7 @@ class Main:
             'sweet red onion, mushroom, red capsicum & melting mozzarella with drizzles of our tangy roast capsicum drizzle, finished with a dash of oregano',
             'Spicy pepperoni, Italian sausage, succulent ham, seasoned ground beef and crispy bacon all piled onto classic marinara sauce and finished with cheesy mozzarella and a drizzle of BBQ'
         ]
-
-       
-
+      
         # create a canva
         self.f = Frame(parent, relief=FLAT, bd=-2, bg='linen')
         self.f.place(x=0, y=80, width=self.WIDTH, height=self.HEIGHT-80)
@@ -75,28 +74,30 @@ class Main:
         self.frame1 = Frame(parent, bg="linen", padx=30)
         self.frame1.grid(row = 0, columnspan = 7)
         #welcome label
-        welcome_label = Label(self.frame1, text = "Welcome to Heavenly Pizza!", bg = "linen", font=("Conmic Sans MS","20","bold"), fg = "red")
+        welcome_label = Label(self.frame1, text = "Welcome to Heavenly Pizza!", bg = "linen", font=("Conmic Sans MS","10","bold"), fg = "red")
         welcome_label.grid(row=0, column=0, sticky = W, padx = 5, pady = 10)
         #logout button
 ##        logout_btn = Button(self.frame1, text = "Log out", bg = "linen", font=("Conmic Sans MS","20","bold"), fg = "red")
 ##        logout_btn.grid(row=0, column=1, sticky = W, padx = 12, pady = 15)
         #regular pizza menu button
-        regular_btn = Button(self.frame1, text = "Regular pizzas ", bg = "linen", font=("Conmic Sans MS","20","bold"), fg = "coral", command = self.regular)
+        regular_btn = Button(self.frame1, text = "Regular pizzas ", bg = "linen", font=("Conmic Sans MS","10","bold"), fg = "coral", command = self.regular)
         regular_btn.grid(row=0, column=2, sticky = W, padx = 15, pady = 10)
         #gourmet pizza menu button
-        gourmet_btn = Button(self.frame1, text = "Gourmet pizzas", bg = "linen", font=("Conmic Sans MS","20","bold"), fg = "coral", command = self.gourmet)
+        gourmet_btn = Button(self.frame1, text = "Gourmet pizzas", bg = "linen", font=("Conmic Sans MS","10","bold"), fg = "coral", command = self.gourmet)
         gourmet_btn.grid(row=0, column=3, sticky = W, padx = 12, pady = 10)
         #check out button
-        checkout_btn = Button(self.frame1, text = "Checkout", bg = "linen", font=("Conmic Sans MS","20","bold"), fg = "red", command = self.checkout)
+        checkout_btn = Button(self.frame1, text = "Checkout", bg = "linen", font=("Conmic Sans MS","10","bold"), fg = "red", command = self.checkout)
         checkout_btn.grid(row=0, column=4, sticky = W, padx = 15, pady = 10)
         #cart button
 ##        cart_btn = Button(self.frame1, text = "CART", bg = "linen", font=("Conmic Sans MS","20","bold"), fg = "red")
 ##        cart_btn.grid(row=0, column=5, sticky = W, padx = 12, pady = 15)
         #total button
-        self.total_label = Label(self.frame1, text = "Total = $ 0", bg = "linen", font=("Conmic Sans MS","20","bold"), fg = "red")
+        self.total_label = Label(self.frame1, text = "Total = $ 0", bg = "linen", font=("Conmic Sans MS","10","bold"), fg = "red")
         self.total_label.grid(row=0, column=5, sticky = W, padx = 15, pady = 10)
 
-       
+        ######read all order details Button########################
+        allorder_btn = Button(self.frame1, text = "All order info", bg = "linen", font=("Conmic Sans MS","10","bold"), fg = "coral", command = self.readfile)
+        allorder_btn.grid(row=0, column=6, sticky = W, padx = 12, pady = 10)
         #######################################################
         
         self.regular_frame = Frame(self.frame, bg="linen", width = self.WIDTH, height = self.HEIGHT)
@@ -104,27 +105,41 @@ class Main:
         self.deliverycheckout_frame = Frame(self.frame, bg="linen", width = self.WIDTH, height = self.HEIGHT)
         self.checkout_frame = Frame(self.frame, bg="linen", width = self.WIDTH, height = self.HEIGHT)
         self.pickupcheckout_frame = Frame(self.frame, bg="linen", width = self.WIDTH, height = self.HEIGHT)
-
         self.readfile_frame = Frame(self.frame, bg="linen", width = self.WIDTH, height = self.HEIGHT)
-
         
         #default get in the regular page first 
         self.regular()
 
-    # def myfunction(self):
-    #     self.canvas.configure(scrol)
 
+    ###############read 'orderinfo.txt' to show all order details####################
+    def readfile(self):
+        f = open('orderinfo.txt', 'r') # 'r' means text file        
+        list1=f.readlines()
 
-   
+        self.regular_frame.grid_forget()
+        self.gourmet_frame.grid_forget()
+        self.deliverycheckout_frame.grid_forget()
+        self.pickupcheckout_frame.grid_forget()
+        self.checkout_frame.grid_forget()
+        
+        self.readfile_frame.grid(row = 1, columnspan = 1)
+        Label(self.readfile_frame, text = "All of the order details are listed below:" , font=("Conmic Sans MS","10","bold"), bg = 'linen',
+               ).grid(row=1,columnspan=2, sticky = EW,padx=0,pady=30)
+
+        self.allorder = ScrolledText(self.readfile_frame, width=125, height=30, wrap='word')
+        self.allorder.grid(row=2,column=1,padx=1,pady=10, columnspan=1, sticky = W)
+        for i in range (0,len(list1)):
+            self.allorder.insert(END,"Order"+str(i+1)+": "+list1[i])
+        f.close()        
+    #################################################################################
         
 
     def myfunction(self, event):
         self.canvas.configure(
             scrollregion=self.canvas.bbox("all"), width=self.WIDTH-20, height=self.HEIGHT-60
-        )
+        )        
 
-
-
+#########regular part###########
     def regular(self):
         self.readfile_frame.grid_forget()
         
@@ -187,7 +202,11 @@ class Main:
    
         # self.frame2.grid(row = 1, columnspan = 4)
         # self.frame2.grid_propagate(0)
-#create gourment pizza product frames
+
+
+#########gourment part###########        
+        #create gourment pizza product frames        
+    def gourmet(self):
         gou_num_cols = 3
         gou_num_rows = 6
         self.gou_product_img_frame = []
@@ -200,9 +219,7 @@ class Main:
         self.gou_num_label = []
         self.gou_add_num_btn = []
         self.gou_add_cart_btn = []
-#########gourment part###########
         
-    def gourmet(self):
         self.readfile_frame.grid_forget()
 
         self.checkout_frame.grid_forget()
@@ -240,7 +257,7 @@ class Main:
                     self.gou_product_text_frame.append(Frame(self.gourmet_frame, bg="linen", width = 441, height = 200))
                     self.gou_product_text_frame[r].grid(row = r, column = c)
                     self.gou_product_text_frame[r].grid_propagate(0)
-                
+                    
             # elif c == 1: #At second column, I'm planning to add labels&button(name,content, add-to-cart button), with width and height setted.
             #     self.gou_product_frame.append(Frame(self.gourment_frame, bg="linen", width = 100, height = 50))
             #     self.gou_product_frame[frame_count].grid(row = r, column = c)
@@ -275,15 +292,10 @@ class Main:
             self.gou_num_label[i].grid(row = 2, column = 1, sticky = E, pady = 40, padx = 68)
             
             self.gou_add_num_btn.append(Button(self.gou_product_text_frame[i], text = "+", command =lambda x=i: self.gou_AddNumber(x)))
-            self.gou_add_num_btn[i].grid(row = 2, column = 1, sticky = E, pady = 40, padx = 40)   
-            
-##            self.gou_add_cart_btn.append(Button(self.gou_product_text_frame[i], text = "ADD TO CART", fg = "red"))
-##            self.gou_add_cart_btn[i].grid(row = 3, column = 1, sticky = S, pady =0, padx = 0)
-            # i += 1
+            self.gou_add_num_btn[i].grid(row = 2, column = 1, sticky = E, pady = 40, padx = 40)              
 
 
-################################
-    #self.totalprice = 0 
+############retular pizza increment by one(+)############
     def re_AddNumber(self,x):         
         re_index = self.re_add_num_btn.index(self.re_add_num_btn[x]) #find the index of the current button that user clicked in the cutton list
         self.ReNum[re_index] += 1 #Once click one of the buttons at a time, it will add one number
@@ -300,22 +312,21 @@ class Main:
 
         if self.total >5: #set maximum number that each user can order for each pizza
             self.ReNum[re_index] = self.ReNum[re_index]-(self.total-5)#let the current number counter stop on the current number (as it cannot be more than 5 pizzas)
-            
             self.re_num_label[re_index].configure(text = self.ReNum[re_index])
             self.totalprice += 0
             if self.total == 6:
                 get_help=Help()#connect to the Help class
                 get_help.help_text.configure(text="Sorry, you cannot order more than 5 pizzas in total!")
-        elif self.ReNum[re_index] >= 0:
-            
+        elif self.ReNum[re_index] >= 0:            
             self.re_num_label[re_index].configure(text = self.ReNum[re_index])
             self.totalprice += 10
-            self.total_label.configure(text = "Total = $"+str(self.totalprice))
-        
+            self.total_label.configure(text = "Total = $"+str(self.totalprice))       
             
         print(self.total, ":", self.regular_name[x])
         #self.total_label.configure(text = "Total = $"+(str(self.ReNum[re_index])*10))
+        
 
+############retular pizza reduce by one(-)############
     def re_ReduceNumber(self,x):        
         re_index = self.re_reduce_num_btn.index(self.re_reduce_num_btn[x])
         self.ReNum[re_index] -= 1
@@ -331,7 +342,7 @@ class Main:
             self.re_num_label[re_index].configure(text = self.ReNum[re_index])        
 
 
-################################       
+############gourmet pizza increment by one(+)############       
     def gou_AddNumber(self,x):                     
         gou_index = self.gou_add_num_btn.index(self.gou_add_num_btn[x]) #find the index of the current button that user clicked in the cutton list
         self.GouNum[gou_index] += 1 #Once click one of the buttons at a time, it will add one number
@@ -353,17 +364,14 @@ class Main:
             
             get_help=Help()#connect to the Help class
             get_help.help_text.configure(text="Sorry, you cannot order more than 5 pizzas in total!")
-
-
-        elif self.GouNum[gou_index] >= 0:
-                 
+        elif self.GouNum[gou_index] >= 0:                 
             self.gou_num_label[gou_index].configure(text = self.GouNum[gou_index])
             self.totalprice += 17
-            self.total_label.configure(text = "Total = $"+str(self.totalprice))
-        
+            self.total_label.configure(text = "Total = $"+str(self.totalprice))        
         print(self.total, ":", self.gourmet_name[x])
         
         
+############gourmet pizza reduce by one(-)############        
     def gou_ReduceNumber(self,x):
         try:
             gou_index = self.gou_reduce_num_btn.index(self.gou_reduce_num_btn[x])
@@ -382,19 +390,8 @@ class Main:
         finally:
             return True
 
-########### No Exception Process###########################
-##        gou_index = self.gou_reduce_num_btn.index(self.gou_reduce_num_btn[x])
-##        self.GouNum[gou_index] -= 1
-##        if self.GouNum[gou_index] >= 0 and self.GouNum[gou_index] <=5:            
-##            self.gou_num_label[x].configure(text = self.GouNum[gou_index])                 
-##            self.totalprice -= 17
-##            self.total_label.configure(text = "Total = $"+str(self.totalprice))
-##        elif self.GouNum[gou_index] < 0:
-##            self.GouNum[gou_index] = 0            
-##            self.gou_num_label[gou_index].configure(text = self.GouNum[gou_index])
-
-            
-
+           
+############ checkout ############   
     def checkout(self):
 
         if self.total == 0:
@@ -415,7 +412,7 @@ class Main:
                    width = 15, height = 15, command = self.deliverycheckout).grid(row=2,column=1, sticky = W,padx=50,pady=20)
 
         
-
+############ checkout for 'delivery' ############   
     def deliverycheckout(self):
         self.readfile_frame.grid_forget()
 
@@ -455,7 +452,7 @@ class Main:
             
         Label(self.deliverycheckout_frame, text='Total Price:', font=("Conmic Sans MS","15","bold"), bg = 'linen').grid(row=11,column=0, sticky = E,padx=1,pady=10)
         Label(self.deliverycheckout_frame, text= ' $ '+str(self.totalprice + 10), font=("Conmic Sans MS","20","bold"), bg = 'linen').grid(row=12,column=1, sticky = W,padx=1,pady=10)
-
+        
         Button(self.deliverycheckout_frame, text='Place Order', font=("Conmic Sans MS","20","bold"), fg = "red"
                , command = lambda x=self: deliveryPlaceOrder(x)).grid(row=13,column=1,padx=1,pady=10, sticky = E)
         Button(self.deliverycheckout_frame, text='Reselect An Order Type', font=("Conmic Sans MS","20","bold"), fg = "red", command = self.checkout).grid(row=13,column=1,padx=1,pady=10, sticky = W)
@@ -471,7 +468,7 @@ class Main:
         for i in self.pizzanum: 
             self.showorder.insert(END, '%s\n'%i)
             
-
+############ checkout for 'pickup' ############   
     def pickupcheckout(self):
         self.readfile_frame.grid_forget()
 
@@ -526,7 +523,7 @@ class Main:
             self.showorder.insert(END, '%s\n'%i)        
         
         
-
+############ deliveryPlaceOrder class for 'delivery' Order ############
 #******************************************************
 class deliveryPlaceOrder:
     def __init__(self, Main):
@@ -556,7 +553,6 @@ class deliveryPlaceOrder:
             return
         ##################################################################
 
-
         Label(self.top, text='Telephone:').grid(row=3,column=0, sticky = E,padx=1,pady=1)
         L3 = Label(self.top,text=Main.v3.get())
         L3.grid(row=3,column=1,padx=1,pady=1, sticky = W)           
@@ -578,12 +574,10 @@ class deliveryPlaceOrder:
             try:
                 float(Main.v3.get())
             except Exception as e:
-#                tkinter.messagebox.showwarning('Warning',str(e)+'please input digit number for telephone!')
                 tkinter.messagebox.showwarning('Warning, telephone number error','Please input digit number for telephone!')
                 self.close_deliverywindow()                
                 return
-        ##################################################################
-        
+        ##################################################################        
 
         Label(self.top, text='Email:').grid(row=4,column=0, sticky = E,padx=1,pady=1)
         L4 = Label(self.top,text=Main.v4.get())
@@ -630,7 +624,7 @@ class deliveryPlaceOrder:
         buttons.totalprice=0        
        
         
-
+############ pickupPlaceOrder class for 'pickup' Order ############
 #******************************************************
 class pickupPlaceOrder:
     def __init__(self, Main):
@@ -648,9 +642,6 @@ class pickupPlaceOrder:
             self.close_pickupwindow()
             return
         ########################################################
-##        Label(self.top, text='Address:').grid(row=2,column=0, sticky = E,padx=1,pady=1)
-##        L2 = Label(self.top,text=Main.v2.get())
-##        L2.grid(row=2,column=1,padx=1,pady=1, sticky = W)          
 
         Label(self.top, text='Telephone:').grid(row=3,column=0, sticky = E,padx=1,pady=1)
         L3 = Label(self.top,text=Main.v3.get())
@@ -676,16 +667,7 @@ class pickupPlaceOrder:
                 tkinter.messagebox.showwarning('Warning, telephone number error','Please input digit number for telephone!')
                 self.close_pickupwindow()                
                 return
-
-##        try:
-##            float(Main.v3.get())
-##        except Exception as e:
-###            tkinter.messagebox.showwarning('Warning, telephone number error',str(e)+'please input digit number for telephone!')
-##            tkinter.messagebox.showwarning('Warning, telephone number error','please input digit number for telephone!')
-##            self.close_pickupwindow()
-##            return
         ##################################################################
-
         
         Label(self.top, text='Email:').grid(row=4,column=0, sticky = E,padx=1,pady=1)
         L4 = Label(self.top,text=Main.v4.get())
@@ -714,16 +696,19 @@ class pickupPlaceOrder:
 
         Button(self.top, text='OK', command=self.close_pickupwindow).grid(row=13,column=1,padx=1,pady=20, sticky = W)
 
-        
-        
+        ##########write order informaton to 'orderinfo.txt'##########
+        f = open('orderinfo.txt', 'a') # append information    
+        orderline=Main.v1.get()+","+"No Address"+","+Main.v3.get()+","+Main.v4.get()+","+str(Main.pizzanum)+","+'No delivery fee'+","+"$"+str(Main.totalprice+10)+"\n"
+        print(orderline)
+        f.write(orderline)    
+        f.close()
+        #############################################################        
         
     def close_pickupwindow(self):        
         self.top.destroy()
         buttons.ReNum = [0,0,0,0,0,0]
-        buttons.GouNum = [0,0,0,0,0,0]      
-                
+        buttons.GouNum = [0,0,0,0,0,0]    
         buttons.totalprice=0       
-
         
         
 #******************************************
@@ -745,7 +730,7 @@ class Help:
         self.help_box.destroy() 
       
 
-#main
+#main rountine
 if __name__ == '__main__':
     root = Tk()
     buttons = Main(root)
