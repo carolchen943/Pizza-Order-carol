@@ -1,5 +1,5 @@
 from tkinter import *
- 
+
 from tkinter.scrolledtext import *
 class Main:
     def __init__(self, parent):
@@ -17,6 +17,7 @@ class Main:
         self.GouNum = [0,0,0,0,0,0] #create list of the number shown in the number counter, with the initial numbers 0.
         self.pizzanum = []
         root.geometry('{}x{}'.format(self.WIDTH,self.HEIGHT))
+        
         # the users cannot change the size of the window
         root.resizable(0, 0)
         
@@ -95,8 +96,9 @@ class Main:
         
         self.regular_frame = Frame(self.frame, bg="linen", width = self.WIDTH, height = self.HEIGHT)
         self.gourmet_frame = Frame(self.frame, bg="linen", width = self.WIDTH, height = self.HEIGHT)
+        self.deliverycheckout_frame = Frame(self.frame, bg="linen", width = self.WIDTH, height = self.HEIGHT)
         self.checkout_frame = Frame(self.frame, bg="linen", width = self.WIDTH, height = self.HEIGHT)
-
+        self.pickupcheckout_frame = Frame(self.frame, bg="linen", width = self.WIDTH, height = self.HEIGHT)
         #default get in the regular page first 
         self.regular()
 
@@ -112,11 +114,12 @@ class Main:
 
     def regular(self):
         self.gourmet_frame.grid_forget()
-        self.checkout_frame.grid_forget()
+        self.deliverycheckout_frame.grid_forget()
         # self.canvas.create_window((0, 30),  window=self.regular_frame)    
         self.regular_frame.grid(row = 1, columnspan = 4) 
-        
-        #product frame
+        self.pickupcheckout_frame.grid_forget()
+        self.checkout_frame.grid_forget()
+        #regular product frame
         self.re_product_frame = []
         for i in range(len(self.regular_name)):
             self.re_product_frame.append(Frame(self.regular_frame, bg="linen", width = self.WIDTH, height = 60))
@@ -185,10 +188,11 @@ class Main:
 #########gourment part###########
         
     def gourmet(self):
-        
+        self.checkout_frame.grid_forget()
         #create gourment frame
         self.regular_frame.grid_forget()
-        self.checkout_frame.grid_forget()
+        self.deliverycheckout_frame.grid_forget()
+        self.pickupcheckout_frame.grid_forget()
         ##self.gourment_frame.grid(row = 0, columnspan = 3)        
         # self.canvas.create_window((0, 30), window=self.gourment_frame)
         self.gourmet_frame.grid(row = 1, columnspan = 3)
@@ -266,12 +270,6 @@ class Main:
     def re_AddNumber(self,x):         
         re_index = self.re_add_num_btn.index(self.re_add_num_btn[x]) #find the index of the current button that user clicked in the cutton list
         self.ReNum[re_index] += 1 #Once click one of the buttons at a time, it will add one number
-        
-        if self.ReNum[re_index] >= 0:
-            
-            self.re_num_label[re_index].configure(text = self.ReNum[re_index])
-            self.totalprice += 10
-            self.total_label.configure(text = "Total = $"+str(self.totalprice))
         #total number in the ReNum list
         re_total = 0 
         for item in self.ReNum:
@@ -287,10 +285,17 @@ class Main:
             self.ReNum[re_index] = self.ReNum[re_index]-(total-5)#let the current number counter stop on the current number (as it cannot be more than 5 pizzas)
             
             self.re_num_label[re_index].configure(text = self.ReNum[re_index])
-            
+            self.totalprice += 0
             if total == 6:
                 get_help=Help()#connect to the Help class
                 get_help.help_text.configure(text="Sorry, you cannot order more than 5 pizzas in total!")
+        elif self.ReNum[re_index] >= 0:
+            
+            self.re_num_label[re_index].configure(text = self.ReNum[re_index])
+            self.totalprice += 10
+            self.total_label.configure(text = "Total = $"+str(self.totalprice))
+        
+            
         print(total, ":", self.regular_name[x])
         #self.total_label.configure(text = "Total = $"+(str(self.ReNum[re_index])*10))
 
@@ -312,12 +317,6 @@ class Main:
     def gou_AddNumber(self,x):                     
         gou_index = self.gou_add_num_btn.index(self.gou_add_num_btn[x]) #find the index of the current button that user clicked in the cutton list
         self.GouNum[gou_index] += 1 #Once click one of the buttons at a time, it will add one number
-        if self.GouNum[gou_index] >= 0:
-                 
-            self.gou_num_label[gou_index].configure(text = self.GouNum[gou_index])
-            self.totalprice += 17
-            self.total_label.configure(text = "Total = $"+str(self.totalprice))
-
         #total number in the ReNum list
         re_total = 0 
         for item in self.ReNum:
@@ -336,6 +335,15 @@ class Main:
             
             get_help=Help()#connect to the Help class
             get_help.help_text.configure(text="Sorry, you cannot order more than 5 pizzas in total!")
+
+
+        elif self.GouNum[gou_index] >= 0:
+                 
+            self.gou_num_label[gou_index].configure(text = self.GouNum[gou_index])
+            self.totalprice += 17
+            self.total_label.configure(text = "Total = $"+str(self.totalprice))
+
+        
         print(total, ":", self.regular_name[x])
     def gou_ReduceNumber(self,x):        
         gou_index = self.gou_reduce_num_btn.index(self.gou_reduce_num_btn[x])
@@ -351,54 +359,166 @@ class Main:
             
             self.gou_num_label[gou_index].configure(text = self.GouNum[gou_index])
 
-
     def checkout(self):
         self.regular_frame.grid_forget()
         self.gourmet_frame.grid_forget()
+        self.deliverycheckout_frame.grid_forget()
+        self.pickupcheckout_frame.grid_forget()
         self.checkout_frame.grid(row = 1, columnspan = 3)
-        Label(self.checkout_frame, text='Name:', font=("Conmic Sans MS","15","bold"), bg = 'linen').grid(row=1,column=0, sticky = E,padx=1,pady=10)
-        v1 = StringVar()
-        e1 = Entry(self.checkout_frame,textvariable=v1,width=80)
+        Label(self.checkout_frame, text = "TO START YOUR ORDER, SELECT AN ORDER TYPE BELOW:" , font=("Conmic Sans MS","25","bold"), bg = 'linen',
+               ).grid(row=1,columnspan=2, sticky = EW,padx=0,pady=40)
+        Button(self.checkout_frame, text = "PICK UP" , font=("Conmic Sans MS","25","bold"), bg = 'linen',
+               width = 15, height = 15, command = self.pickupcheckout).grid(row=2,column=0, sticky = W,padx=50,pady=10)
+        Button(self.checkout_frame, text = "DELIVERY" , font=("Conmic Sans MS","25","bold"), bg = 'linen',
+               width = 15, height = 15, command = self.deliverycheckout).grid(row=2,column=1, sticky = W,padx=50,pady=10)
+
+    def deliverycheckout(self):
+        self.regular_frame.grid_forget()
+        self.gourmet_frame.grid_forget()
+        self.checkout_frame.grid_forget()
+        self.pickupcheckout_frame.grid_forget()
+        self.deliverycheckout_frame.grid(row = 1, columnspan = 3)
+        Label(self.deliverycheckout_frame, text='Name:', font=("Conmic Sans MS","15","bold"), bg = 'linen').grid(row=1,column=0, sticky = E,padx=1,pady=10)
+        self.v1 = StringVar()
+        e1 = Entry(self.deliverycheckout_frame,textvariable=self.v1,width=80)
         e1.grid(row=1,column=1,padx=1,pady=10)         
 
-        Label(self.checkout_frame, text='Address:', font=("Conmic Sans MS","15","bold"), bg = 'linen').grid(row=2,column=0, sticky = E,padx=1,pady=10)
-        v2 = StringVar()
-        e2 = Entry(self.checkout_frame,textvariable=v2,width=80)
+        Label(self.deliverycheckout_frame, text='Address:', font=("Conmic Sans MS","15","bold"), bg = 'linen').grid(row=2,column=0, sticky = E,padx=1,pady=10)
+        self.v2 = StringVar()
+        e2 = Entry(self.deliverycheckout_frame,textvariable=self.v2,width=80)
         e2.grid(row=2,column=1,padx=1,pady=10)          
 
-        Label(self.checkout_frame, text='Telephone:', font=("Conmic Sans MS","15","bold"), bg = 'linen').grid(row=3,column=0, sticky = E,padx=1,pady=10)
-        v3 = StringVar()
-        e3 = Entry(self.checkout_frame,textvariable=v3,width=80)
+        Label(self.deliverycheckout_frame, text='Telephone:', font=("Conmic Sans MS","15","bold"), bg = 'linen').grid(row=3,column=0, sticky = E,padx=1,pady=10)
+        self.v3 = StringVar()
+        e3 = Entry(self.deliverycheckout_frame,textvariable=self.v3,width=80)
         e3.grid(row=3,column=1,padx=1,pady=10)           
 
-        Label(self.checkout_frame, text='Email:', font=("Conmic Sans MS","15","bold"), bg = 'linen').grid(row=4,column=0, sticky = E,padx=1,pady=10)
-        v4 = StringVar()
-        e4 = Entry(self.checkout_frame,textvariable=v4,width=80)
+        Label(self.deliverycheckout_frame, text='Email:', font=("Conmic Sans MS","15","bold"), bg = 'linen').grid(row=4,column=0, sticky = E,padx=1,pady=10)
+        self.v4 = StringVar()
+        e4 = Entry(self.deliverycheckout_frame,textvariable=self.v4,width=80)
         e4.grid(row=4,column=1,padx=1,pady=10)
 
-        Label(self.checkout_frame, text='Your Order: ', font=("Conmic Sans MS","15","bold"), bg = 'linen').grid(row=5,column=0, sticky = NE,padx=1,pady=10)
-        self.showorder = ScrolledText(self.checkout_frame, width=55, height=10, wrap='word')
+        Label(self.deliverycheckout_frame, text='Your Order: ', font=("Conmic Sans MS","15","bold"), bg = 'linen').grid(row=5,column=0, sticky = NE,padx=1,pady=10)
+        self.showorder = ScrolledText(self.deliverycheckout_frame, width=55, height=10, wrap='word')
         self.showorder.grid(row=5,column=1,padx=1,pady=10, columnspan=1, sticky = W)
 
 
-        Label(self.checkout_frame, text='Delivery Method: ', font=("Conmic Sans MS","15","bold"), bg = 'linen').grid(row=8,column=0, sticky = E,padx=1,pady=10)
+        Label(self.deliverycheckout_frame, text='Order Type: ', font=("Conmic Sans MS","15","bold"), bg = 'linen').grid(row=8,column=0, sticky = E,padx=1,pady=10)
 
-        Label(self.checkout_frame, text='Delivery', font=("Conmic Sans MS","15","bold"), bg = 'linen').grid(row=8,column=1, sticky = W,padx=1,pady=10)
+        Label(self.deliverycheckout_frame, text='Delivery', font=("Conmic Sans MS","15","bold"), bg = 'linen').grid(row=8,column=1, sticky = W,padx=1,pady=10)
             
-        Label(self.checkout_frame, text='Total Price:', font=("Conmic Sans MS","15","bold"), bg = 'linen').grid(row=11,column=0, sticky = E,padx=1,pady=10)
-        Label(self.checkout_frame, text= ' $ '+str(self.totalprice), font=("Conmic Sans MS","15","bold"), bg = 'linen').grid(row=12,column=1, sticky = W,padx=1,pady=10)
+        Label(self.deliverycheckout_frame, text='Total Price:', font=("Conmic Sans MS","15","bold"), bg = 'linen').grid(row=11,column=0, sticky = E,padx=1,pady=10)
+        Label(self.deliverycheckout_frame, text= ' $ '+str(self.totalprice), font=("Conmic Sans MS","15","bold"), bg = 'linen').grid(row=12,column=1, sticky = W,padx=1,pady=10)
 
-        Button(self.checkout_frame, text='Place Order', font=("Conmic Sans MS","20","bold"), fg = "red").grid(row=13,column=1,padx=1,pady=10)
-
+        Button(self.deliverycheckout_frame, text='Place Order', font=("Conmic Sans MS","20","bold"), fg = "red"
+               , command = lambda x=self: PlaceOrder(x)).grid(row=13,column=1,padx=1,pady=10, sticky = E)
+        Button(self.deliverycheckout_frame, text='Reselect An Order Type', font=("Conmic Sans MS","20","bold"), fg = "red", command = self.checkout).grid(row=13,column=1,padx=1,pady=10, sticky = W)
         self.pizzanum = []
 
         for i in range(6):           
             if self.ReNum[i] > 0:
-                self.pizzanum.append(self.regular_name[i]+"   x   "+str(self.ReNum[i]))
+                self.pizzanum.append(self.regular_name[i]+"       x"+str(self.ReNum[i]))
             if self.GouNum[i] > 0:
-                self.pizzanum.append(self.gourmet_name[i]+"   x   "+str(self.GouNum[i]))
+                self.pizzanum.append(self.gourmet_name[i]+"       x"+str(self.GouNum[i]))
         for i in self.pizzanum: 
             self.showorder.insert(END, '%s\n'%i)
+
+    def pickupcheckout(self):
+        self.regular_frame.grid_forget()
+        self.gourmet_frame.grid_forget()
+        self.checkout_frame.grid_forget()
+        self.pickupcheckout_frame.grid(row = 1, columnspan = 3)
+        self.deliverycheckout_frame.grid_forget()
+        Label(self.pickupcheckout_frame, text='Name:', font=("Conmic Sans MS","15","bold"), bg = 'linen').grid(row=1,column=0, sticky = E,padx=1,pady=10)
+        self.v1 = StringVar()
+        e1 = Entry(self.pickupcheckout_frame,textvariable=self.v1,width=80)
+        e1.grid(row=1,column=1,padx=1,pady=10)         
+
+##        Label(self.pickupcheckout_frame, text='Address:', font=("Conmic Sans MS","15","bold"), bg = 'linen').grid(row=2,column=0, sticky = E,padx=1,pady=10)
+##        v2 = StringVar()
+##        e2 = Entry(self.pickupcheckout_frame,textvariable=v2,width=80)
+##        e2.grid(row=2,column=1,padx=1,pady=10)          
+
+        Label(self.pickupcheckout_frame, text='Telephone:', font=("Conmic Sans MS","15","bold"), bg = 'linen').grid(row=3,column=0, sticky = E,padx=1,pady=10)
+        self.v3 = StringVar()
+        e3 = Entry(self.pickupcheckout_frame,textvariable=self.v3,width=80)
+        e3.grid(row=3,column=1,padx=1,pady=10)           
+
+        Label(self.pickupcheckout_frame, text='Email:', font=("Conmic Sans MS","15","bold"), bg = 'linen').grid(row=4,column=0, sticky = E,padx=1,pady=10)
+        self.v4 = StringVar()
+        e4 = Entry(self.pickupcheckout_frame,textvariable=self.v4,width=80)
+        e4.grid(row=4,column=1,padx=1,pady=10)
+
+        Label(self.pickupcheckout_frame, text='Your Order: ', font=("Conmic Sans MS","15","bold"), bg = 'linen').grid(row=5,column=0, sticky = NE,padx=1,pady=10)
+        self.showorder = ScrolledText(self.pickupcheckout_frame, width=55, height=10, wrap='word')
+        self.showorder.grid(row=5,column=1,padx=1,pady=10, columnspan=1, sticky = W)
+
+
+        Label(self.pickupcheckout_frame, text='Order Type: ', font=("Conmic Sans MS","15","bold"), bg = 'linen').grid(row=8,column=0, sticky = E,padx=1,pady=10)
+
+        Label(self.pickupcheckout_frame, text='Pick Up', font=("Conmic Sans MS","15","bold"), bg = 'linen').grid(row=8,column=1, sticky = W,padx=1,pady=10)
+            
+        Label(self.pickupcheckout_frame, text='Total Price:', font=("Conmic Sans MS","15","bold"), bg = 'linen').grid(row=11,column=0, sticky = E,padx=1,pady=10)
+        Label(self.pickupcheckout_frame, text= ' $ '+str(self.totalprice), font=("Conmic Sans MS","15","bold"), bg = 'linen').grid(row=12,column=1, sticky = W,padx=1,pady=10)
+
+        Button(self.pickupcheckout_frame, text='Place Order', font=("Conmic Sans MS","20","bold"), fg = "red"
+               , command = lambda x=self: PlaceOrder(x)).grid(row=13,column=1,padx=1,pady=10, sticky = E)
+        Button(self.pickupcheckout_frame, text='Reselect An Order Type', font=("Conmic Sans MS","20","bold"), fg = "red", command = self.checkout).grid(row=13,column=1,padx=1,pady=10, sticky = W)
+        self.pizzanum = []
+
+        for i in range(6):           
+            if self.ReNum[i] > 0:
+                self.pizzanum.append(self.regular_name[i]+"       x"+str(self.ReNum[i]))
+            if self.GouNum[i] > 0:
+                self.pizzanum.append(self.gourmet_name[i]+"       x"+str(self.GouNum[i]))
+        for i in self.pizzanum: 
+            self.showorder.insert(END, '%s\n'%i)
+            
+        
+        
+
+
+#******************************************************
+class PlaceOrder:
+    def __init__(self, Main):
+        background="linen"
+        self.top = Toplevel()
+        self.top.title('Check Out')
+         
+        Label(self.top, text='Name:').grid(row=1,column=0, sticky = E,padx=1,pady=1)
+        L1 = Label(self.top,text=Main.v1.get())
+        L1.grid(row=1,column=1,padx=1,pady=1, sticky = W)         
+
+        Label(self.top, text='Address:').grid(row=2,column=0, sticky = E,padx=1,pady=1)
+        L2 = Label(self.top,text=Main.v2.get())
+        L2.grid(row=2,column=1,padx=1,pady=1, sticky = W)          
+
+        Label(self.top, text='Telephone:').grid(row=3,column=0, sticky = E,padx=1,pady=1)
+        L3 = Label(self.top,text=Main.v3.get())
+        L3.grid(row=3,column=1,padx=1,pady=1, sticky = W)           
+
+        Label(self.top, text='Email:').grid(row=4,column=0, sticky = E,padx=1,pady=1)
+        L4 = Label(self.top,text=Main.v4.get())
+        L4.grid(row=4,column=1,padx=1,pady=1, sticky = W)
+
+        Label(self.top, text='Your Order: ').grid(row=5,column=0, sticky = E,padx=1,pady=1)
+        for item in Main.pizzanum:         
+            showorderlabel = Label(self.top, text=item)
+        for i in range(len(Main.pizzanum)):
+            showorderlabel.grid(row=5+i,column=1, sticky = W,padx=1,pady=1)
+
+
+        Label(self.top, text='Delivery Method: ').grid(row=10,column=0, sticky = E,padx=1,pady=1)
+
+        Label(self.top, text='Delivery').grid(row=10,column=1, sticky = W,padx=1,pady=1)
+            
+        Label(self.top, text='Total Price:').grid(row=11,column=0, sticky = E,padx=1,pady=1)
+        Label(self.top, text= ' $ '+str(Main.totalprice)).grid(row=12,column=1, sticky = W,padx=1,pady=1)
+
+        Button(self.top, text='OK', command=self.close_window).grid(row=13,column=1,padx=1,pady=1)
+    def close_window(self):
+        self.top.destroy()
+
 
 #******************************************
 class Help:
@@ -430,6 +550,3 @@ if __name__ == '__main__':
     root.title ("Heavenly Pizza GUI Ordering System")
     
     root.mainloop()
-
-
-
