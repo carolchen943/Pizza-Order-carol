@@ -1,5 +1,5 @@
 from tkinter import *
-
+#from PIL import ImageTk, Image 
 class Main:
     def __init__(self, parent):
         
@@ -12,10 +12,10 @@ class Main:
 
         images = []
         gou_images = []
-        self.ReNum = [0,0,0,0,0,0]
+        self.ReNum = [0,0,0,0,0,0] #create list of the number shown in the number counter, with the initial numbers 0.
         self.GouNum = [0,0,0,0,0,0] #create list of the number shown in the number counter, with the initial numbers 0.
         root.geometry('{}x{}'.format(self.WIDTH,self.HEIGHT))
-        #forbid user resize the GUI window
+        # the users cannot change the size of the window
         root.resizable(0, 0)
         
         self.regular_name = [
@@ -47,7 +47,7 @@ class Main:
 
        
 
-        #create canvas
+        # create a canva
         self.f = Frame(parent, relief=FLAT, bd=-2, bg='linen')
         self.f.place(x=0, y=80, width=self.WIDTH, height=self.HEIGHT-80)
 
@@ -66,7 +66,7 @@ class Main:
         self.canvas.create_window((0, 0), window=self.frame)
         self.frame.bind("<Configure>", self.myfunction)
 
-        #top menu frame
+        #create top menu frame
         self.frame1 = Frame(parent, bg="linen", padx=30)
         self.frame1.grid(row = 0, columnspan = 7)
         #welcome label
@@ -88,13 +88,13 @@ class Main:
         cart_btn = Button(self.frame1, text = "CART", bg = "linen", font=("Conmic Sans MS","20","bold"), fg = "red")
         cart_btn.grid(row=0, column=5, sticky = W, padx = 12, pady = 15)
         #total button
-        total_label = Label(self.frame1, text = "Total = ", bg = "linen", font=("Conmic Sans MS","20","bold"), fg = "red")
-        total_label.grid(row=0, column=6, sticky = W, padx = 12, pady = 15)
+        self.total_label = Label(self.frame1, text = "Total = $", bg = "linen", font=("Conmic Sans MS","20","bold"), fg = "red")
+        self.total_label.grid(row=0, column=6, sticky = W, padx = 12, pady = 15)
         
         self.regular_frame = Frame(self.frame, bg="linen", width = self.WIDTH, height = self.HEIGHT)
         self.gourmet_frame = Frame(self.frame, bg="linen", width = self.WIDTH, height = self.HEIGHT)
 
-        #default get into regular page first
+        #default get in the regular page first 
         self.regular()
 
     # def myfunction(self):
@@ -255,20 +255,39 @@ class Main:
             self.gou_add_cart_btn.append(Button(self.gou_product_text_frame[i], text = "ADD TO CART", fg = "red"))
             self.gou_add_cart_btn[i].grid(row = 3, column = 1, sticky = S, pady =0, padx = 0)
             # i += 1
-            
+
+
 ################################
-     #create list of the number shown in the number counter, with the initial numbers 0.
+     
     def re_AddNumber(self,x):         
         re_index = self.re_add_num_btn.index(self.re_add_num_btn[x]) #find the index of the current button that user clicked in the cutton list
-        self.ReNum[re_index] += 1
-        if self.ReNum[re_index] >= 0 and self.ReNum[re_index] <=5:
+        self.ReNum[re_index] += 1 #Once click one of the buttons at a time, it will add one number
+        
+        if self.ReNum[re_index] >= 0:
             
             self.re_num_label[re_index].configure(text = self.ReNum[re_index])
+            self.total_label.configure(text = "Total = $"+(str((self.ReNum[re_index])*10)))
+        #total number in the ReNum list
+        re_total = 0 
+        for item in self.ReNum:
+            re_total += item
+        #total number in the GouNum list
+        gou_total = 0
+        for item in self.GouNum:
+            gou_total += item
+        #total number that the user already ordered
+        total = re_total + gou_total
 
-        elif self.ReNum[re_index] >5: #set maximum number that each user can order for each pizza
-            self.ReNum[re_index] = 5
+        if total >5: #set maximum number that each user can order for each pizza
+            self.ReNum[re_index] = self.ReNum[re_index]-(total-5)#let the current number counter stop on the current number (as it cannot be more than 5 pizzas)
             
             self.re_num_label[re_index].configure(text = self.ReNum[re_index])
+            
+            if total == 6:
+                get_help=Help()#connect to the Help class
+                get_help.help_text.configure(text="Sorry, you cannot order more than 5 pizzas in total!")
+        print(total, ":", self.regular_name[x])
+        #self.total_label.configure(text = "Total = $"+(str(self.ReNum[re_index])*10))
 
     def re_ReduceNumber(self,x):        
         re_index = self.re_reduce_num_btn.index(self.re_reduce_num_btn[x])
@@ -281,19 +300,34 @@ class Main:
             self.ReNum[re_index] = 0
             
             self.re_num_label[re_index].configure(text = self.ReNum[re_index])        
+
+
 ################################       
-    def gou_AddNumber(self,x):         
+    def gou_AddNumber(self,x):                     
         gou_index = self.gou_add_num_btn.index(self.gou_add_num_btn[x]) #find the index of the current button that user clicked in the cutton list
-        self.GouNum[gou_index] += 1
-        if self.GouNum[gou_index] >= 0 and self.GouNum[gou_index] <=5:
+        self.GouNum[gou_index] += 1 #Once click one of the buttons at a time, it will add one number
+        if self.GouNum[gou_index] >= 0:
+                 
+            self.gou_num_label[gou_index].configure(text = self.GouNum[gou_index])
+        #total number in the ReNum list
+        re_total = 0 
+        for item in self.ReNum:
+            re_total += item
+        #total number in the GouNum list
+        gou_total = 0
+        for item in self.GouNum:
+            gou_total += item
+        #total number that the user already ordered
+        total = re_total + gou_total
+
+        if total >5: #set maximum number that each user can order for each pizza
+            self.GouNum[gou_index] = self.GouNum[gou_index]-(total-5)#let the current number counter stop on the current number (as it cannot be more than 5 pizzas)
             
             self.gou_num_label[gou_index].configure(text = self.GouNum[gou_index])
-
-        elif self.GouNum[gou_index] >5: #set maximum number that each user can order for each pizza
-            self.GouNum[gou_index] = 5
             
-            self.gou_num_label[gou_index].configure(text = self.GouNum[gou_index])
-
+            get_help=Help()#connect to the Help class
+            get_help.help_text.configure(text="Sorry, you cannot order more than 5 pizzas in total!")
+        print(total, ":", self.regular_name[x])
     def gou_ReduceNumber(self,x):        
         gou_index = self.gou_reduce_num_btn.index(self.gou_reduce_num_btn[x])
         self.GouNum[gou_index] -= 1
@@ -305,6 +339,22 @@ class Main:
             self.GouNum[gou_index] = 0
             
             self.gou_num_label[gou_index].configure(text = self.GouNum[gou_index])
+#******************************************
+class Help:
+    def __init__(self):
+        background="white"
+        self.help_box=Toplevel()
+        self.help_frame=Frame(self.help_box, width=300,height=200, bg=background)
+        self.help_frame.grid()
+        heading = Label(self.help_frame, text="Notice", font="arial 10 bold", bg=background)
+        heading.grid(column=0, row=0)
+        self.help_text = Label(self.help_frame, text=" ", justify=LEFT, width=40, bg=background, wrap=250)
+        self.help_text.grid(column=0, row=1)
+        dismiss_btn = Button(self.help_frame, text="ok", width=10, bg="blue",
+                             font="arial 10 bold", command=self.close_help)
+        dismiss_btn.grid(row=2, pady=10)
+    def close_help(self):
+        self.help_box.destroy()
 
 #main
 if __name__ == '__main__':
